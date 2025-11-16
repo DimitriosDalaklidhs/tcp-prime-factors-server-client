@@ -31,3 +31,13 @@ It includes both a server and a client:
 - Graceful handling of socket errors  
 
 
+
+# Compile
+gcc -o server server.c
+gcc -o client client.c
+
+# Run server
+./server
+
+# Run client (in another terminal)
+./client 127.0.0.1
