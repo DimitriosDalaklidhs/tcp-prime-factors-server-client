@@ -1,19 +1,14 @@
-PHONY: lib
+CC = gcc
+CFLAGS = -Wall -O2
 
-TLPI_DIR = ./lib/
-TLPI_LIB = ./lib/libtlpi.a
-TLPI_INCL_DIR = ${TLPI_DIR}/lib
+all: server client
 
-include ./lib/Makefile.inc
+server: server.c
+	$(CC) $(CFLAGS) -o server server.c
 
-GEN_EXE = server
+client: client.c
+	$(CC) $(CFLAGS) -o client client.c
 
-LINUX_EXE = large_file
+clean:
+	rm -f server client
 
-EXE = ${GEN_EXE} ${LINUX_EXE}
-
-all : lib exe
-
-exe : ${EXE}
-
-allgen : ${GEN_EXE}
