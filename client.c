@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
     if (inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) <= 0)
         errMsg("inet_pton");
 
+    // Connect to server
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) {
         fprintf(stderr, "Error: Unable to connect to the server.\n");
         close(sockfd);
@@ -40,27 +41,37 @@ int main(int argc, char *argv[]) {
     }
 
     char buffer[BUFFER_SIZE];
+
+    // Read server greeting: "Give me a positive integer\n"
     int bytesRead = read(sockfd, buffer, sizeof(buffer) - 1);
     if (bytesRead <= 0) {
-        errMsg("Error reading from socket");
+        errMsg("Error reading greeting from server");
     }
 
     buffer[bytesRead] = '\0';
+    printf("Server: %s", buffer);
 
-    // Check for the correct server hello message
-    if (strcmp(buffer, "Give me a positive integer\n") != 0) {
-        fprintf(stderr, "Error: Unexpected server message\n");
+    // If server does not send expected greeting, exit
+    if (strncmp(buffer, "Give me a positive integer", 26) != 0) {
+        fprintf(stderr, "Unexpected server message.\n");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
 
-    // Send a positive integer to the server
-    int positiveInteger = 42;  // You can change this to any positive integer
-    if (write(sockfd, &positiveInteger, sizeof(positiveInteger)) != sizeof(positiveInteger)) {
-        errMsg("Error writing to socket");
+    // ----------- FIXED SECTION (Sending text instead of binary int) -------------
+
+    int positiveInteger = 42;  // You may change this or prompt user input
+    char sendBuf[32];
+
+    int len = snprintf(sendBuf, sizeof(sendBuf), "%d\n", positiveInteger);
+
+    if (write(sockfd, sendBuf, len) != len) {
+        errMsg("Error writing integer to socket");
     }
 
-    // Read and print messages from the server until it terminates
+    // ---------------------------------------------------------------------------
+
+    // Read and print server response (prime factors)
     while ((bytesRead = read(sockfd, buffer, sizeof(buffer) - 1)) > 0) {
         buffer[bytesRead] = '\0';
         printf("%s", buffer);
