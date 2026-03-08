@@ -59,9 +59,9 @@ int main(int argc, char *argv[]) {
     }
 
     // ----------- Sending text instead of binary int -------------
-    int positiveInteger;
-    printf("Give me a positive integer");
-    scanf("%d", &positiveInteger);
+    printf("Enter a positive Integer");
+scanf(
+    int positiveInteger = 42;  // You may change this or give your user input
     char sendBuf[32];
 
     int len = snprintf(sendBuf, sizeof(sendBuf), "%d\n", positiveInteger);
