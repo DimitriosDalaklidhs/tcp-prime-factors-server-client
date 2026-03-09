@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     // ----------- Sending text instead of binary int -------------
     int positiveInteger;
-    printf("Give me a positive integer");
+    printf("Give me a positive integer\n");
     scanf("%d", &positiveInteger);
     char sendBuf[32];
 
