@@ -7,33 +7,37 @@
 #define PORT 8080
 #define BUFFER_SIZE 256
 
-void errMsg(const char *msg);
-
+// Prints error message and exits program
 void errMsg(const char *msg) {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[]) {
+
+    // Expect exactly one argument: server IP address
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <server_ip>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
+    // Create TCP socket
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1)
         errMsg("socket");
 
+    // Prepare server address structure
     struct sockaddr_in serv_addr;
-    memset(&serv_addr, 0, sizeof(serv_addr));
+    memset(&serv_addr, 0, sizeof(serv_addr));  // Clear struct
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_family = AF_INET;            // IPv4
+    serv_addr.sin_port = htons(PORT);          // Convert port to network byte order
 
+    // Convert IP string to binary form
     if (inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) <= 0)
         errMsg("inet_pton");
 
-    // Connect to server
+    // Establish connection to server
     if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1) {
         fprintf(stderr, "Error: Unable to connect to the server.\n");
         close(sockfd);
@@ -42,42 +46,44 @@ int main(int argc, char *argv[]) {
 
     char buffer[BUFFER_SIZE];
 
-    // Read server greeting: "Give me a positive integer\n"
+    // ---- Step 1: Receive greeting from server ----
     int bytesRead = read(sockfd, buffer, sizeof(buffer) - 1);
     if (bytesRead <= 0) {
         errMsg("Error reading greeting from server");
     }
 
-    buffer[bytesRead] = '\0';
+    buffer[bytesRead] = '\0';  // Null-terminate received string
     printf("Server: %s", buffer);
 
-    // If server does not send expected greeting, exit
+    // Validate expected protocol message
     if (strncmp(buffer, "Give me a positive integer", 26) != 0) {
         fprintf(stderr, "Unexpected server message.\n");
         close(sockfd);
         exit(EXIT_FAILURE);
     }
 
-    // ----------- Sending text instead of binary int -------------
+    // ---- Step 2: Get user input and send to server ----
     int positiveInteger;
     printf("Give me a positive integer\n");
     scanf("%d", &positiveInteger);
-    char sendBuf[32];
 
+    // Convert integer to string (text protocol)
+    char sendBuf[32];
     int len = snprintf(sendBuf, sizeof(sendBuf), "%d\n", positiveInteger);
 
+    // Send the string to the server
     if (write(sockfd, sendBuf, len) != len) {
         errMsg("Error writing integer to socket");
     }
 
-    // ---------------------------------------------------------------------------
-
-    // Read and print server response (prime factors)
+    // ---- Step 3: Receive and display server response ----
+    // (Expected: prime factorization or similar result)
     while ((bytesRead = read(sockfd, buffer, sizeof(buffer) - 1)) > 0) {
         buffer[bytesRead] = '\0';
         printf("%s", buffer);
     }
 
+    // Clean up socket
     close(sockfd);
 
     return 0;
