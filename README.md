@@ -1,6 +1,6 @@
 # TCP Prime Factors Server & Client
 
-A C based TCP client-server application that exchanges integers and computes 
+A C based TCP client - server application that exchanges integers and computes 
 their prime factors. Originally developed as coursework at the University of 
 Western Macedonia, later refined and published as a personal repository.
 
