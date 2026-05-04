@@ -50,24 +50,25 @@ gcc -o client client.c
 ```bash
 ./client 127.0.0.1
 ```
+## Docker
+
+The server ships with a multi stage Dockerfile that compiles in a `debian:stable-slim` build image and copies only the stripped binary into a clean runtime image thus keeping the final image small and free of `gcc` and build dependencies.
+
+```bash
+docker build -t prime-factors-server .
+docker run --rm -p 8080:8080 prime-factors-server
+```
+
+Then connect from the host as usual:
+
+```bash
+./client 127.0.0.1
+```
+
+The container exposes port `8080`; the `-p 8080:8080` flag maps it to the same port on the host.
 
 ## Author
 
-Dimitrios Dalaklidis is an aspiring backend developer with a strong academic 
-foundation in Informatics and hands-on experience in systems programming, 
-data structures, and software architecture. His work reflects a methodical 
-approach to problem solving, supported by practical exposure to multi-language 
-development environments and structured programming disciplines. He has 
-completed a range of projects involving low-level system operations in C, 
-object-oriented application design in Java, browser-based scripting, and 
-networked communication models.
+Dimitrios Dalaklidis, final year CS student at the University of Western Macedonia, based in Thessaloniki. Backend and systems: open - source contributor to Amazon Ion's `fusion-java` runtime (3 merged PRs) with other projects spanning Spring Boot REST APIs, FastAPI services with Redis and CI/CD to AWS and systems programming in C.
 
-His technical interests center on backend system design, algorithmic 
-efficiency, and the construction of reliable, maintainable software. He 
-actively pursues opportunities to expand his expertise through academically 
-driven projects and independent research, with an emphasis on building 
-robust systems that adhere to professional development practices and modern 
-software engineering principles.
-
-For professional communication, he can be reached at: 
-**[dalaklidesdemetres@gmail.com](mailto:dalaklidesdemetres@gmail.com)**
+Reach me at [dalaklidesdemetres@gmail.com](mailto:dalaklidesdemetres@gmail.com) · [GitHub](https://github.com/DimitriosDalaklidhs) · [LinkedIn](https://www.linkedin.com/in/dimitris-dalaklidis-a72838397/)
