@@ -12,17 +12,42 @@ Berkeley sockets API. It includes both a server and a client:
 * **Server**
    * Listens on TCP port `8080` with `SO_REUSEADDR` enabled for quick restarts
    * Spawns a child process (`fork()`) for each incoming connection, allowing concurrent clients without threading
-   * Reaps terminated children non-blockingly with `waitpid(WNOHANG)` to prevent zombie processes
+   * Reaps terminated children non-blockingly with `waitpid(WNOHANG)` at the top of the accept loop to prevent zombie processes
    * Prompts the client for a positive integer over the socket
    * Validates input with `strtol` (checking range, format, and sign) and returns its prime factors as a comma-separated list
    * Closes the connection gracefully after responding
-
 * **Client**
    * Connects to the server using an IP passed as a command-line argument
    * Verifies the server's initial prompt matches the expected protocol before sending input
    * Reads a positive integer from standard input and transmits it as a newline-terminated string
    * Displays the server's messages and the calculated prime factors
    * Reports socket errors descriptively via `perror` at every syscall
+
+## Protocol Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant P as Server (parent)
+    participant W as Worker (child)
+
+    P->>P: socket, bind, listen on 8080
+    C->>P: connect
+    P->>W: fork
+    P-->>P: close connfd and reap with waitpid WNOHANG
+    W->>C: Give me a positive integer
+    C->>C: validate prompt with strncmp
+    C->>W: send integer as text
+    W->>W: strtol plus range and sign check
+    alt valid input
+        W->>W: trial division while n greater equal p squared
+        W->>C: comma separated prime factors
+    else invalid input
+        W->>C: Invalid input. Please send a positive integer.
+    end
+    W-->>C: close connfd
+    W-->>P: child exits and is reaped on next accept loop
+```
 
 ## Key Concepts Demonstrated
 
@@ -50,6 +75,7 @@ gcc -o client client.c
 ```bash
 ./client 127.0.0.1
 ```
+
 ## Docker
 
 The server ships with a multi stage Dockerfile that compiles in a `debian:stable-slim` build image and copies only the stripped binary into a clean runtime image thus keeping the final image small and free of `gcc` and build dependencies.
