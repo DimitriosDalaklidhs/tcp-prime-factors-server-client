@@ -1,13 +1,10 @@
 # TCP Prime Factors Server & Client
 
-A C based TCP client - server application that exchanges integers and computes 
-their prime factors. Originally developed as coursework for a distributed systems course at the University of 
-Western Macedonia, now published as a personal repository.
+A C based TCP client - server application that exchanges integers and computes their prime factors. Originally developed as coursework for a distributed systems course at the University of Western Macedonia, now published as a personal repository.
 
 ## Overview
 
-This project demonstrates low-level network programming in C using the 
-Berkeley sockets API. It includes both a server and a client:
+This project demonstrates low-level network programming in C using the Berkeley sockets API. It includes both a server and a client:
 
 * **Server**
    * Listens on TCP port `8080` with `SO_REUSEADDR` enabled for quick restarts
@@ -28,25 +25,18 @@ Berkeley sockets API. It includes both a server and a client:
 ```mermaid
 sequenceDiagram
     participant C as Client
-    participant P as Server (parent)
-    participant W as Worker (child)
-
-    P->>P: socket, bind, listen on 8080
-    C->>P: connect
-    P->>W: fork
-    P-->>P: close connfd and reap with waitpid WNOHANG
-    W->>C: Give me a positive integer
-    C->>C: validate prompt with strncmp
-    C->>W: send integer as text
-    W->>W: strtol plus range and sign check
-    alt valid input
-        W->>W: trial division while n greater equal p squared
-        W->>C: comma separated prime factors
-    else invalid input
-        W->>C: Invalid input. Please send a positive integer.
+    participant S as Server
+    participant W as Child
+    C->>S: connect
+    S->>W: fork
+    W->>C: "Give me a positive integer"
+    C->>W: 84
+    alt valid
+        W->>C: 2,3,7
+    else invalid
+        W->>C: "Invalid input..."
     end
-    W-->>C: close connfd
-    W-->>P: child exits and is reaped on next accept loop
+    W-->>C: close
 ```
 
 ## Key Concepts Demonstrated
@@ -95,6 +85,6 @@ The container exposes port `8080`; the `-p 8080:8080` flag maps it to the same p
 
 ## Author
 
-Dimitrios Dalaklidis, Graduate of the School of Sciences(STEM) with a 4-year degree in Informatics from the public EU/Greek University of Western Macedonia (THE World University Rankings: Computer Science 601-800 for 2025). Backend and systems: open - source contributor to Amazon Ion's `fusion-java` runtime (3 merged PRs) with other projects spanning Spring Boot REST APIs, FastAPI services with Redis and CI/CD to AWS and systems programming in C. Based in Thessaloniki
+Dimitrios Dalaklidis, final year CS student at the University of Western Macedonia, based in Thessaloniki. Backend and systems: open - source contributor to Amazon Ion's `fusion-java` runtime (3 merged PRs) with other projects spanning Spring Boot REST APIs, FastAPI services with Redis and CI/CD to AWS and systems programming in C.
 
 Reach me at [dalaklidesdemetres@gmail.com](mailto:dalaklidesdemetres@gmail.com) · [GitHub](https://github.com/DimitriosDalaklidhs) · [LinkedIn](https://www.linkedin.com/in/dimitris-dalaklidis-a72838397/)
