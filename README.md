@@ -95,6 +95,6 @@ The container exposes port `8080`; the `-p 8080:8080` flag maps it to the same p
 
 ## Author
 
-Dimitrios Dalaklidis, final year CS student at the University of Western Macedonia, based in Thessaloniki. Backend and systems: open - source contributor to Amazon Ion's `fusion-java` runtime (3 merged PRs) with other projects spanning Spring Boot REST APIs, FastAPI services with Redis and CI/CD to AWS and systems programming in C.
+Dimitrios Dalaklidis, Graduate of the School of Sciences(STEM) with a 4-year degree in Informatics from the public EU/Greek University of Western Macedonia (THE World University Rankings: Computer Science 601-800 for 2025). Backend and systems: open - source contributor to Amazon Ion's `fusion-java` runtime (3 merged PRs) with other projects spanning Spring Boot REST APIs, FastAPI services with Redis and CI/CD to AWS and systems programming in C. Based in Thessaloniki
 
 Reach me at [dalaklidesdemetres@gmail.com](mailto:dalaklidesdemetres@gmail.com) · [GitHub](https://github.com/DimitriosDalaklidhs) · [LinkedIn](https://www.linkedin.com/in/dimitris-dalaklidis-a72838397/)
