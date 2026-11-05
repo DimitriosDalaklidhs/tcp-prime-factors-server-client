@@ -2,28 +2,25 @@
 FROM debian:stable-slim AS build
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        build-essential && \
+    apt-get install -y --no-install-recommends gcc libc6-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src
-
-# copy source file
 COPY server.c .
 
-# compile the server
-RUN gcc -O2 -Wall -o server server.c && strip server
+# Static binary: it needs no libc at runtime, so it can run from an empty image
+RUN gcc -O2 -Wall -Wextra -static -o server server.c && strip server
 
 
 # ---------- Runtime stage ----------
-FROM debian:stable-slim
+FROM scratch
 
-WORKDIR /app
+COPY --from=build /src/server /server
 
-# copy the built binary from the build stage
-COPY --from=build /src/server .
+# Run as an unprivileged user (scratch has no /etc/passwd, so use numeric IDs)
+USER 65534:65534
 
 EXPOSE 8080
 
-# run the server when the container starts
-CMD ["./server"]
+# The server handles SIGTERM itself, so `docker stop` returns immediately
+ENTRYPOINT ["/server"]
